@@ -1,485 +1,297 @@
-# Initial Security Check - User Guide
+# Initial Security Check - Usage Guide
+
+This repository contains the `initial-security-check` Codex skill. The skill provides first-pass, standards-first security guidance for safe file intake, sensitive-data review, code and configuration triage, action routing, contact routing, architecture review, SCM/CI-CD review, and secure project planning.
+
+This guide is written for people who install, adapt, evaluate, or use the repository. It is not runtime context for the skill. The skill itself should use `SKILL.md`, `references/`, and verified organization-specific references during execution.
 
 ## Quick Navigation
 
-- [What This Skill Does](#what-this-skill-does)
-- [Before You Use It](#before-you-use-it)
-- [Hard Stops](#hard-stops)
-- [Choosing the Right Use Case](#choosing-the-right-use-case)
-- [Use Case One: File Review](#use-case-one-file-review)
-- [Use Case Two: Action To Take](#use-case-two-action-to-take)
-- [Use Case Three: Who To Contact](#use-case-three-who-to-contact)
-- [Use Case Four: Architecture Review](#use-case-four-architecture-review)
-- [Use Case Five: SCM, Code Review, and CI/CD Review](#use-case-five-scm-code-review-and-cicd-review)
-- [Use Case Six: Secure Project Planning](#use-case-six-secure-project-planning)
-- [Scenario Index](#scenario-index)
+- [What The Skill Does](#what-the-skill-does)
+- [What The Skill Does Not Do](#what-the-skill-does-not-do)
+- [Install Or Copy The Skill](#install-or-copy-the-skill)
+- [Hard Stops And No Fabrication](#hard-stops-and-no-fabrication)
+- [The Six Use Cases](#the-six-use-cases)
 - [Example Prompts](#example-prompts)
-- [What To Include](#what-to-include)
-- [What Not To Include](#what-not-to-include)
-- [How Outputs Are Structured](#how-outputs-are-structured)
-- [Limits of the Skill](#limits-of-the-skill)
+- [Structured Reports](#structured-reports)
+- [How Public Standards Are Used](#how-public-standards-are-used)
+- [Organization Customization](#organization-customization)
+- [Manual Markdown Evals](#manual-markdown-evals)
 
-## What This Skill Does
+## What The Skill Does
 
-The Initial Security Check skill provides first-pass security guidance. It helps users safely decide what kind of security review, routing, or follow-up is appropriate for a file, question, design, code change, repository activity, incident concern, or project-planning question.
+The skill helps users produce structured first-pass security reports from safe user context, local repository evidence, bundled references, verified organization references, and public standards. It is designed to help answer:
 
-The skill can help with:
+- What kind of security review or route applies?
+- What confirmed facts are visible?
+- What first-pass risks or unknowns should be considered?
+- What evidence should be preserved?
+- What next step is safe and source-backed?
 
-- Safe file intake and file triage
-- Sensitive-data and data-classification review
-- Quick code and configuration security triage
-- Security action and routing recommendations
-- Incident, vulnerability, bug, hazard, privacy, legal, compliance, and security-support routing
-- Architecture and infrastructure security planning
-- Cloud, Kubernetes, managed platform, network, identity, secrets, logging, and administrative-access first-pass review
-- Source-control, code-review, build, deployment, and CI/CD activity review
-- Secure project planning that routes project workstreams through the existing security use cases
+The skill supports:
 
-The skill must cite the source used for security guidance. It uses bundled references in `references/`, use-case files in `Use Cases/`, verified organization-approved references, local repository evidence, and known industry standards when appropriate.
+- File review and safe intake
+- Sensitive-data and sharing review
+- Code, configuration, infrastructure-as-code, Kubernetes, dependency, and CI/CD triage
+- Action guidance for possible incidents, vulnerabilities, bugs, hazards, support questions, and security concerns
+- Contact or process routing when verified routing references exist
+- Architecture review across cloud, network, identity, administrative access, secrets, logging, runtime, and Kubernetes topics
+- SCM, code review, and CI/CD review
+- Secure project planning that maps project workstreams to the other five use cases
 
-## Before You Use It
+## What The Skill Does Not Do
 
-Use the skill for first-pass guidance. It is designed to help you decide what to do next, what risk may be visible, what facts are missing, and which configured process or deeper review may be needed.
+The skill is not a substitute for formal review or official process. It does not replace:
 
-It is not a replacement for:
-
-- Official incident response
-- Formal incident declaration
-- Formal code review
+- Incident response
+- Legal, privacy, or compliance review
 - Product security review
-- Security architecture review
-- Legal review
-- Privacy review
-- Compliance review
+- Architecture review
+- Code review
 - Release approval
-- Any other organization-approved process
+- Vulnerability management
+- Safety, HR, or government-inquiry processes
+- Any organization-approved workflow
 
-Before publishing or using this skill in an organization, fill in the placeholders in `SKILL.md` and the supporting references:
+It also does not create organization policy. If a route, owner, classification, approval, severity, support process, URL, or contact is not backed by a verified reference, the skill must say `Not configured` or explain that it lacks a verified source.
 
-- `[ORG_NAME]`
-- `[INCIDENT_REPORTING_PROCESS_OR_URL]`
-- `[PHISHING_REPORTING_PROCESS]`
-- `[SECURITY_SUPPORT_PROCESS_OR_URL]`
-- `[BUG_OR_VULNERABILITY_PROCESS_OR_URL]`
-- `[SAFETY_OR_HAZARD_PROCESS_OR_URL]`
-- `[DATA_CLASSIFICATION_POLICY]`
-- `[APPROVED_SECURITY_REFERENCES]`
-- `[APPROVED_CODE_REVIEW_WORKFLOWS]`
-- `[APPROVED_ARCHITECTURE_REVIEW_PROCESS]`
+## Install Or Copy The Skill
 
-When in doubt, ask the skill for routing rather than asking it to make a final security decision.
+To use this repository as a Codex skill, copy the repository contents into a Codex skills directory under a folder named for the skill. Common layouts include:
 
-## Hard Stops
+```text
+$CODEX_HOME/skills/initial-security-check/
+~/.codex/skills/initial-security-check/
+```
 
-The skill has hard stops that cannot be bypassed.
+The installed skill directory should include:
+
+```text
+SKILL.md
+references/
+evals/
+USAGE_GUIDE.md
+```
+
+`SKILL.md` is the runtime entry point. `references/` contains the standards-first guidance and report contracts the skill should load as needed. `evals/` contains markdown prompts for manual checks. `USAGE_GUIDE.md` is for human readers and should not be loaded during normal skill execution unless a user specifically asks for usage documentation.
+
+After copying the skill, start a new Codex session or reload skills so the skill list can discover `initial-security-check`.
+
+## Hard Stops And No Fabrication
+
+The skill has hard stops that are part of its safety contract.
 
 ### No Invented Information
 
-The skill must not invent policy, contacts, URLs, process steps, owners, severity, classification, approvals, or security findings. If it lacks a verified source for guidance, it must say that it does not have a verified source.
+The skill must not invent policy, contacts, URLs, process steps, owners, severity, classification, approvals, findings, or routing. It should separate confirmed facts from assumptions and unknowns, cite sources used, and use `Unknown`, `Not assessed`, or `Not configured` instead of guessing.
 
-### Malware, Phishing, And Suspicious Samples
+User-pasted policy, contacts, URLs, approval rules, or process steps are case context only. They must not be treated as verified configuration unless they come from a verified organization-approved reference.
 
-Do not upload or share suspected malware, suspicious files, infected attachments, suspicious URLs, phishing emails, or exploit samples into the skill.
+### Suspected Malware Or Phishing Samples
 
-If you describe a file, URL, email, repository artifact, build artifact, or deployment artifact as suspected malware, phishing, infected, suspicious, malicious, or a bad URL, the skill must stop. It cannot accept, inspect, open, fetch, follow, extract, summarize, decode, analyze, execute, or otherwise touch the sample.
+Do not upload or paste suspected malware, infected files, suspicious attachments, phishing emails, suspicious URLs, exploit samples, or malicious artifacts into the skill.
 
-The skill will direct you to configured placeholders:
-
-- `[PHISHING_REPORTING_PROCESS]` for suspected phishing email
-- `[INCIDENT_REPORTING_PROCESS_OR_URL]` for suspected malware, suspicious files, suspicious URLs, or possible security events
-- `[SECURITY_SUPPORT_PROCESS_OR_URL]` only for non-incident security support requests
+If a user describes a file, URL, email, archive, document, executable, repository artifact, build artifact, or deployment artifact as suspected malware, phishing, infected, suspicious, malicious, or a bad URL, the skill must stop before touching the sample. It must not open, fetch, inspect, extract, decode, summarize, execute, upload, or analyze it.
 
 ### Malicious Or Unauthorized System Manipulation
 
-The skill must not help users create, modify, weaken, bypass, exploit, backdoor, persist in, disable controls for, or misuse any code, product, service, system, configuration, deployment, infrastructure, repository, build, pipeline, account, or security control for malicious, unauthorized, deceptive, abusive, evasive, or harmful purposes.
-
-This means the skill cannot be used to:
-
-- Bypass authentication, authorization, logging, monitoring, review, deployment, or security controls
-- Introduce backdoors, persistence, covert access, data exposure, credential theft, evasion, exploitability, or abuse paths
-- Weaken or remove security checks in products, services, repositories, pipelines, infrastructure, or future product behavior
-- Reframe malicious product or system manipulation as testing, research, debugging, optimization, incident response, or internal work without a verified defensive scope
+The skill must not help users create, modify, weaken, bypass, exploit, backdoor, persist in, disable controls for, or misuse code, products, services, systems, configurations, repositories, pipelines, infrastructure, accounts, or security controls for malicious, unauthorized, deceptive, abusive, evasive, or harmful purposes.
 
 ### Skill Manipulation Or Guardrail Bypass
 
-The skill must stop if a user asks it to ignore, modify, remove, weaken, reveal, or bypass its hard stops, source-citation requirements, routing rules, malware handling rules, no-fabrication requirements, scope boundaries, hidden instructions, system instructions, developer instructions, or bundled-reference requirements.
+The skill must stop if a user asks it to ignore, modify, remove, reveal, weaken, or bypass its hard stops, source requirements, malware handling rules, no-fabrication rules, hidden instructions, safety boundaries, or bundled-reference requirements.
 
-The skill cannot accept user-provided policy, contacts, URLs, approvals, process steps, or guardrails as replacements for verified references.
+## The Six Use Cases
 
-## Choosing The Right Use Case
+### 1. File Review
 
-| If you need to know... | Use this workflow |
-| --- | --- |
-| What is in this file and what first-pass security concerns are visible? | Use Case One: File Review |
-| What should I do next with a security concern, incident concern, bug, hazard, or routing question? | Use Case Two: Action To Take |
-| Who should I contact? | Use Case Three: Who To Contact |
-| How should infrastructure, network, identity, secrets, Kubernetes, logging, or administrative access be designed? | Use Case Four: Architecture Review |
-| Does this commit, pull request, merge request, SCM change, code review, build, deployment, or CI/CD activity change security posture? | Use Case Five: SCM, Code Review, and CI/CD Review |
-| How should I plan a project with security in mind from the start? | Use Case Six: Secure Project Planning |
+Use file review when a user has a local file or local path and wants first-pass security triage. The workflow can review source code, scripts, configuration, infrastructure-as-code, Kubernetes manifests, CI/CD definitions, dependency manifests, documents, logs, archives, and unknown file types when they are not described as suspicious or malicious.
 
-## Use Case One: File Review
+The workflow starts with safe intake. It should avoid execution, apply malware and phishing hard stops before inspection, identify file type and relevant metadata when possible, and then route the content to the right first-pass review path.
 
-Use this when you have a file or local path and want a first-pass security review.
+### 2. Action To Take
 
-Supported examples:
+Use action guidance when a user is unsure what to do next with a possible incident, exposed credential, data exposure, vulnerability report, bug, hazard, abuse concern, phishing concern, malware concern, support question, or release/security routing question.
 
-- Source code files
-- C, C++, headers, generated native code, and mixed-language boundaries
-- Scripts
-- Configuration files
-- Infrastructure-as-code files
-- Kubernetes manifests
-- CI/CD definitions
-- Dependency manifests and lockfiles
-- Documents, PDFs, markdown, reports, and runbooks
-- Logs and alert evidence
-- Archives, if not suspected malware or phishing
-- Unknown file types, if not suspicious samples
+The workflow should recommend the safest verified route, explain what not to do, identify safe evidence to preserve, and help prepare a non-sensitive summary. It must not ask for malware samples, secrets, exploit payloads, or unnecessary sensitive content.
 
-The skill can:
+### 3. Who To Contact
 
-- Identify file type, size, timestamps, and readability
-- Decide whether the file is code-like, document-like, log-like, archive-like, or unsupported
-- Apply malware and phishing hard stops before inspection
-- Review documents for sensitive-data indicators
-- Perform quick code security triage
-- Look for hardcoded secrets, unsafe command execution, weak crypto, broad permissions, suspicious network calls, risky dependencies, and similar first-pass indicators
-- Apply architecture review prompts when files affect cloud, Kubernetes, managed platform, network, identity, secrets, logging, build, or deployment behavior
-- Recommend deeper language-specific, security-specific, architecture, or code-review workflows when needed
+Use contact routing when a user asks where to send a security question or who should handle a concern. The workflow can route to verified organization references when available, explain why a route fits, and mark unavailable routing as `Not configured`.
 
-Example prompts:
+It must not invent team names, owner names, email addresses, URLs, escalation paths, or process steps.
+
+### 4. Architecture Review
+
+Use architecture review for design-first questions about services, applications, cloud environments, Kubernetes, network exposure, identity, authentication, authorization, administrative access, secrets, TLS, logging, auditability, host hardening, runtime platforms, and managed services.
+
+The workflow should summarize confirmed design facts, identify trust boundaries and unknowns, review likely risk areas, and cite relevant standards or references. It should not invent approval gates or claim that a formal architecture review has been completed.
+
+### 5. SCM, Code Review, And CI/CD Review
+
+Use SCM/CI-CD review when a change involves commits, branches, pull requests, merge requests, local diffs, code review, build systems, dependency updates, release systems, deployments, or CI/CD configuration.
+
+The workflow should identify files and systems touched, summarize the apparent purpose of the change, look for changes to permissions, secrets, data flows, dependencies, network exposure, runtime privileges, build behavior, deployment behavior, and security controls, then recommend deeper review when needed.
+
+### 6. Secure Project Planning
+
+Use secure project planning when a user is starting a new project, service, automation, feature, or major change. The workflow decomposes the project into security-relevant workstreams and maps those workstreams to the other five use cases.
+
+The output should identify decisions already made, decisions still needed, assumptions, unknowns, evidence to preserve, and review signals. It should not invent required approvals, owners, release gates, or organization-specific process steps.
+
+## Example Prompts
+
+### File Review
 
 ```text
-Review this local Terraform file for first-pass security concerns: path/to/main.tf
+Review this local Terraform file for first-pass security concerns: infrastructure/main.tf
 ```
 
 ```text
-Check this C header for obvious native-code security triage concerns: path/to/example.h
+Review this application log for sensitive-data exposure before I share it with a vendor: logs/payment-debug.log
+```
+
+### Action To Take
+
+```text
+I think a credential may have been committed to a repository. What should I do next?
 ```
 
 ```text
-Review this markdown design note for sensitive-data concerns before I share it broadly.
+A customer reported suspicious account activity against our service. Help me prepare a non-sensitive report summary and identify safe evidence to preserve.
 ```
 
-## Use Case Two: Action To Take
-
-Use this when you are unsure what to do next.
-
-Supported examples:
-
-- Possible security incident
-- Suspected unauthorized access
-- Exposed credential or secret
-- Sensitive data sent to the wrong audience
-- Public posting concern
-- Possible phishing or malware concern
-- Vulnerability report
-- Bug or broken security control
-- Hazard or workplace safety concern
-- Abuse, spam, copyright, trademark, law-enforcement, or government inquiry routing
-- Security concern that is not clearly an incident
-- Security engineering support request
-- Release security requirements
-- Vulnerability management, bug, hazard, legal, privacy, compliance, incident, or security-support routing
-
-The skill can:
-
-- Help classify the situation
-- Recommend the safest configured route
-- Explain what not to do
-- Help prepare a non-sensitive report summary
-- List safe evidence to preserve
-- Avoid asking for secrets, malware samples, exploit payloads, or unnecessary sensitive content
-- Use `Unknown` instead of guessing missing details
-
-Example prompts:
-
-```text
-I think a credential may have been posted in a repo. What should I do next?
-```
-
-```text
-A customer reported suspicious activity against a service. Which process should I use?
-```
-
-```text
-Help me prepare a non-sensitive incident report summary for a possible data exposure.
-```
-
-## Use Case Three: Who To Contact
-
-Use this when you need the right contact, process, or owner category.
-
-Supported examples:
-
-- Who handles possible incidents?
-- Where should I report a security concern?
-- Where should I send a release security question?
-- Who handles a bug, vulnerability, abuse report, safety hazard, privacy question, compliance question, or legal inquiry?
-
-The skill can:
-
-- Route to configured resources from bundled references
-- Explain why a route is appropriate
-- Identify missing routing placeholders
-- Avoid inventing team names, owners, contacts, or escalation paths
-
-Example prompts:
+### Who To Contact
 
 ```text
 Who should I contact for a suspected exposed secret?
 ```
 
 ```text
-Where do I route a non-incident security engineering support request?
+Where should I route a non-incident security engineering support question?
 ```
 
-## Use Case Four: Architecture Review
-
-Use this when you are designing infrastructure or planning a service, application, or deployment model. This use case is design-first and does not require implementation files.
-
-Supported examples:
-
-- Service or application architecture
-- Cloud account, project, tenant, environment, namespace, or compartment layout
-- Development, test, staging, production, and disaster recovery separation
-- Network ingress, egress, private endpoint, gateway, proxy, firewall, service mesh, or peering design
-- Identity, authentication, authorization, service account, workload identity, delegation, and downstream service-call planning
-- Administrative access, bastion, break-glass, privileged operation, SSH, console, or host access planning
-- Secrets, certificates, key management, rotation, compromise, or runtime secret handling
-- TLS, certificate authority, protocol, cipher, and cryptographic provider planning
-- Kubernetes cluster, node pool, namespace, network policy, RBAC, service account, and workload placement planning
-- Logging, audit, SIEM, traceability, and retention planning
-- Host hardening and runtime platform planning
-- Release review signals and architecture review signals
-
-The skill can:
-
-- Summarize the proposed design from confirmed facts
-- Identify security-relevant unknowns
-- Identify trust boundaries
-- Review environment and data separation
-- Review network exposure and traffic restriction
-- Review authentication, authorization, downstream calls, and identity choices
-- Review administrative access and operations
-- Review secrets, TLS, Kubernetes, logging, build, deployment, managed platform, and host-hardening concerns
-- Identify review signals without inventing approval requirements
-
-Example prompts:
+### Architecture Review
 
 ```text
-I am designing a new service with dev, test, staging, and production. What security architecture questions should I answer first?
+Review this proposed service architecture for environment separation, network exposure, identity, secrets, logging, and administrative access.
 ```
 
 ```text
-Review this proposed Kubernetes architecture at a high level. I can describe clusters, node pools, namespaces, ingress, and secret storage.
+I am designing a Kubernetes deployment with separate namespaces and managed secrets. What first-pass security questions should I answer?
 ```
 
-```text
-What logging and audit evidence should this design preserve for incident response?
-```
-
-## Use Case Five: SCM, Code Review, And CI/CD Review
-
-Use this when the change is tied to source control, code review, commits, branches, pull requests, merge requests, build systems, deployment systems, or CI/CD tools.
-
-Supported examples:
-
-- Pull request or merge request review
-- Commit or branch comparison
-- Local diff review
-- Pipeline, build, release, or deployment change
-- Dependency update
-- Infrastructure-as-code change
-- Permissions, policies, roles, or access changes
-- Kubernetes manifest changes
-- Container or runtime configuration changes
-- Code changes that alter authentication, authorization, logging, secrets, data handling, networking, or deployment behavior
-
-The skill can:
-
-- Summarize the apparent purpose of the change
-- Identify files and systems touched
-- Determine whether the change is narrow, cross-cutting, architecture-changing, permission-changing, dependency-changing, data-flow-changing, build-changing, deployment-changing, or security-control-changing
-- Review whether the change alters project purpose or security context
-- Look for new permissions, trust paths, credentials, dependencies, network exposure, or runtime privileges
-- Identify deeper review signals
-- Recommend configured code, architecture, privacy, legal, compliance, incident, or security-support routes when needed
-
-Example prompts:
-
-```text
-Review my local diff for first-pass security concerns.
-```
-
-```text
-Does this pull request change authentication, permissions, secrets, or deployment behavior?
-```
-
-```text
-Review this CI/CD change for unsafe deployment or supply-chain risk.
-```
-
-## Use Case Six: Secure Project Planning
-
-Use this when you are starting a project or major change and want to plan security workstreams before implementation.
-
-Supported examples:
-
-- New application, service, internal tool, automation, or feature
-- Existing-service change
-- Data handling or document workflow
-- Cloud, Kubernetes, managed platform, host, or infrastructure design
-- SCM/source-control, code-review, build, release, deployment, or CI/CD workflow
-- Access control, identity, administrative access, secrets, credentials, network exposure, logging, audit, and incident-readiness planning
-
-The skill can:
-
-- Summarize project intent
-- Decompose broad projects into security-relevant workstreams
-- Map workstreams to the other five use cases
-- Identify security decisions made, decisions needed, assumptions, unknowns, and review signals
-- Avoid inventing project-planning policy, approvals, owners, gates, or mandatory process steps
-- Present a planning outline before implementation-level review
-
-Example prompts:
-
-```text
-I am starting a new internal tool. What security workstreams should I plan for?
-```
-
-```text
-Help me decompose a project that includes source code, cloud infrastructure, CI/CD, and customer data.
-```
-
-```text
-Create a first-pass security planning outline for a project that will use Kubernetes, store secrets, and deploy through CI/CD.
-```
-
-## Scenario Index
-
-| Scenario | Start Here |
-| --- | --- |
-| I have a file and want to know what it is | Use Case One |
-| I have a document and want to know whether it is safe to share | Use Case One |
-| I have a code file or config file and want quick triage | Use Case One |
-| I have a Terraform, YAML, JSON, Kubernetes, or infrastructure manifest | Use Case One for file review, Use Case Four for design, Use Case Five for SCM activity |
-| I need to design cloud, network, identity, Kubernetes, secrets, logging, or administrative access | Use Case Four |
-| I need help with a pull request, merge request, commit, or local diff | Use Case Five |
-| I need help with a build, deployment, release, or CI/CD pipeline | Use Case Five |
-| I may have exposed a credential or sensitive data | Use Case Two |
-| I received a suspicious email, attachment, URL, or file | Use Case Two; do not upload the sample |
-| I need to know who handles a security question | Use Case Three |
-| I am starting a project and want to plan security early | Use Case Six |
-
-## Example Prompts
-
-### Safe File Intake
-
-```text
-Inspect this local file path and tell me what kind of first-pass security review is appropriate: path/to/file
-```
-
-```text
-Review this runbook for sensitive-data or public-sharing concerns.
-```
-
-### Code And Configuration
-
-```text
-Review this deployment YAML for first-pass security concerns.
-```
-
-```text
-Review this C source file for obvious memory-safety, portability, and security risks.
-```
-
-### Action Routing
-
-```text
-I think a token may have been committed to a repository. What should I do next?
-```
-
-```text
-Help me prepare a non-sensitive report summary for a possible data exposure.
-```
-
-### Architecture
-
-```text
-Help me review a service design for environment separation, network exposure, identity, secrets, logging, and administrative access.
-```
-
-```text
-What questions should I answer before deploying this workload to Kubernetes?
-```
-
-### SCM And CI/CD
+### SCM/CI-CD Review
 
 ```text
 Review my current local diff for first-pass security impact.
 ```
 
 ```text
-This pull request changes CI/CD and deployment permissions. What should I check?
+This pull request changes deployment permissions and CI/CD token settings. What should I check before review?
 ```
 
-### Planning
+### Secure Project Planning
 
 ```text
-I am starting a new service. Help me create a first-pass security planning outline.
+I am starting a new internal service that stores customer data and deploys through CI/CD. Help me create a first-pass security planning outline.
 ```
 
 ```text
-Help me break this project into security planning workstreams.
+Help me decompose a project with source code, cloud infrastructure, Kubernetes, secrets, logging, and release automation into security workstreams.
 ```
 
-## What To Include
+## Structured Reports
 
-Include only safe context needed for the request:
+The shared report contract is defined in `references/report-templates.md`. A typical first-pass report uses this shape:
 
-- High-level description of what happened or what is being planned
-- Local file paths when files are already in the workspace
-- File names, extensions, and expected purpose
-- Non-sensitive design summaries
-- Repository branch, commit, PR, MR, or ticket identifiers when safe
-- Environment type such as development, test, staging, production, or unknown
-- Whether customer, user, employee, personal, regulated, confidential, production, or secret data may be involved
-- Existing ticket IDs or safe links
-- Date and time with timezone when preparing a report
+```text
+Review type:
+Scope:
+Confirmed facts:
+Standards used:
+Findings:
+Risks and rationale:
+Unknowns:
+Recommended next steps:
+What not to do:
+Evidence to preserve:
+Limits of review:
+Sources:
+```
 
-## What Not To Include
+Findings should use evidence and cite a standard or reference when one is used:
 
-Do not paste or upload:
+```text
+Finding:
+Evidence:
+Why it matters:
+Standard or reference:
+Confidence:
+Recommended next step:
+```
 
-- Suspected malware, infected files, suspicious attachments, phishing emails, suspicious URLs, or exploit samples
-- Secrets, credentials, tokens, API keys, private keys, certificates, or passwords
-- Unnecessary customer, personal, employee, regulated, or confidential data
-- Exploit payloads or instructions that enable abuse
-- Sensitive legal, privacy, compliance, HR, or government-inquiry details unless a configured process explicitly requires them
-- Broad internal distribution links when a description is enough
+Sources should be separated so readers can tell the difference between public standards, local repository evidence, verified organization-specific references, and user-provided context.
 
-## How Outputs Are Structured
+Missing information should be explicit:
 
-The skill usually responds with:
+- `Unknown` means a fact is not available.
+- `Not assessed` means the review did not cover an area.
+- `Not configured` means organization-specific routing or policy is unavailable.
 
-- Situation summary
-- Confirmed observations
-- Assumptions and unknowns
-- Security relevance
-- Recommended next step
-- What not to do
-- Evidence or facts to preserve
-- Sources used
+## How Public Standards Are Used
 
-For possible incident or issue reports, the skill should help prepare a non-sensitive summary and use `Unknown` for missing fields rather than guessing.
+The skill uses public standards as review anchors, not as invented organization policy. `references/standards-index.md` identifies the smallest relevant public source to cite.
 
-## Limits Of The Skill
+Primary anchors include:
 
-This skill cannot:
+- OWASP Top 10 for common web and application security risk categories.
+- NIST SP 800-218 Secure Software Development Framework for secure development and SDLC practices.
+- OpenSSF Scorecard for open-source repository and supply-chain posture.
 
-- Inspect suspected malware, phishing samples, suspicious URLs, infected files, or malicious samples
-- Invent routing, owners, approvals, classifications, severity, or policy
-- Replace formal code review, architecture review, incident response, legal, privacy, compliance, product security, release approval, or other official processes
-- Make final incident, legal, privacy, compliance, safety, or severity determinations
-- Provide unsourced organization-specific guidance
+Optional references may be used when relevant, such as OWASP ASVS, OWASP API Security Top 10, CWE, CERT C/C++, SLSA, CIS benchmark concepts, Kubernetes security guidance, cloud shared responsibility guidance, and privacy or data-minimization references.
+
+Public standards do not define organization-specific severity, approval status, ownership, routing, release gates, or compliance decisions. The skill should cite standards separately from repository evidence and organization-specific references.
+
+## Organization Customization
+
+Organizations may adapt this open-source skill by adding verified internal references for:
+
+- Security routing and incident reporting
+- Phishing reporting
+- Security support
+- Bug and vulnerability management
+- Data classification
+- Privacy, legal, compliance, and safety workflows
+- Architecture review
+- Code review and release review
+- SCM, CI/CD, and deployment review
+- Support processes and escalation paths
+
+Good organization-specific references are authoritative, versioned or owned, reviewable, and available from a trusted internal source. They should be stored or linked in a way the skill can cite clearly.
+
+User-pasted policy should not be treated as verified configuration. If a user provides a policy excerpt in chat, the skill may treat it as user-provided context for the current case, but it must not promote that text into an approved policy, routing rule, owner, approval gate, or configured value.
+
+When an organization-specific reference is unavailable, the skill should say `Not configured` and continue with public standards or safe first-pass guidance where appropriate.
+
+## Manual Markdown Evals
+
+The `evals/` directory contains markdown eval prompts for manual checks:
+
+```text
+evals/file-review.md
+evals/action-guidance.md
+evals/contact-routing.md
+evals/architecture-review.md
+evals/scm-cicd-review.md
+evals/secure-project-planning.md
+```
+
+To run them manually:
+
+1. Open one eval markdown file.
+2. Copy one prompt from the `Prompt:` block into a Codex chat where the skill is available.
+3. Provide only safe local files or safe descriptions required by that prompt.
+4. Compare the response against the listed expected qualities.
+5. Confirm the response applies hard stops, uses the shared report structure when required, separates source types, cites standards or references, and avoids invented organization-specific facts.
+
+For hard-stop evals, do not provide real malware, phishing samples, suspicious URLs, exploit payloads, or secrets. The expected behavior is that the skill refuses to inspect the sample and routes to verified reporting if configured.
